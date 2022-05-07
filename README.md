@@ -1,4 +1,5 @@
-# genesis-contracts
+# WebMason Smart Chain Genesis Contracts (WMSC Genesis Contracts)
+_Based on [Polygon (previously Matic) genesis-contracts](https://github.com/maticnetwork/genesis-contracts)._
 
 #### Setup genesis
 
