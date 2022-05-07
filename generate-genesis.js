@@ -3,6 +3,7 @@ const program = require("commander")
 const nunjucks = require("nunjucks")
 const fs = require("fs")
 const web3 = require("web3")
+const solc = require('solc')
 
 const validators = require("./validators")
 
@@ -62,21 +63,41 @@ function compileContract(key, contractFile, contractName) {
   })
 }
 
+// compile contract fixed
+function compileContractFixed(key, contractFile, contractName) {
+  const input = {
+    language: 'Solidity',
+    sources: {
+      [`${contractName}.sol`]: {
+        content: fs.readFileSync(contractFile, { encoding: 'utf8' }),
+      }
+    },
+    settings: {
+      optimizer: { enabled: true, runs: 200, },
+      evmVersion: 'constantinople',
+      outputSelection: { '*': { '*': ['*'], }, },
+    },
+  };
+  const output = JSON.parse(solc.compile(JSON.stringify(input)));
+  const bytecode = output.contracts[`${contractName}.sol`][contractName].evm.deployedBytecode.object;
+  return { key, compiledData: bytecode, contractName, contractFile }
+}
+
 // compile files
 Promise.all([
-  compileContract(
+  compileContractFixed(
     "borValidatorSetContract",
-    "contracts/BorValidatorSet.sol",
+    "flatten/BorValidatorSet.sol",
     "BorValidatorSet"
   ),
-  compileContract(
+  compileContractFixed(
     "borStateReceiverContract",
-    "contracts/StateReceiver.sol",
+    "flatten/StateReceiver.sol",
     "StateReceiver"
   ),
-  compileContract(
+  compileContractFixed(
     "maticChildERC20Contract",
-    "wmsc-contracts/contracts/child/MRC20.sol",
+    "p202-contracts/flatten/MRC20.sol",
     "MRC20"
   )
 ]).then(result => {
