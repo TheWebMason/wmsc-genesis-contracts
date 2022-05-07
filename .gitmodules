@@ -1,0 +1,3 @@
+[submodule "wmsc-contracts"]
+	path = wmsc-contracts
+	url = https://github.com/TheWebMason/wmsc-contracts.git
